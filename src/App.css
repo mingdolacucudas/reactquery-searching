@@ -12,6 +12,7 @@ header {
 form {
   display: flex;
   flex-direction: row;
+  justify-content: center;
 }
 input {
   margin-top: 20px;

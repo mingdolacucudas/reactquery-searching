@@ -8,6 +8,12 @@ import { useRef, useState } from "react";
 const api요청함수get = () => {
   return axios.get("http://localhost:4000/sleep_times");
 };
+const 영화데이터 = () => {
+  return axios.get(
+    "https://yts.mx/api/v2/list_movies.jsonminimum_rating=8.8&sort_by=year"
+  );
+};
+
 //?--------------------------------------------------
 function App() {
   let [keyword, setKeyword] = useState("");
@@ -16,10 +22,10 @@ function App() {
   const searching = useRef("");
   const queryClient = useQueryClient();
   //!usequery: 데이터를 가져와서 캐싱하기 위해 사용(쿼리키, 쿼리함수, 옵션)
-  const 쿼리 = useQuery("querykey", api요청함수get, {
+  const 쿼리 = useQuery("querykey", 영화데이터, {
     onSuccess: (data) => {
       //!데이터 패칭 성공시 콜백함수
-      console.log(data);
+      console.log(data.data.data.movies);
     },
     onError: () => {
       //!데이터 패칭 실패시 콜백함수
@@ -30,19 +36,20 @@ function App() {
   if (쿼리.isLoading) {
     return null;
   }
+  const movies = 쿼리.data.data.data.movies;
   //!filter
-  const 데이터 = 쿼리.data.data;
-  const test = 데이터.filter((x) => x.day === keyword);
+  // const 데이터 = 쿼리.data.data;
+  //const test = 데이터.filter((x) => x.day === keyword);
   //!includes
-  const test2 = 데이터.filter(
-    (x) => x.day != undefined && x.day.includes(keyword)
+  const test2 = movies.filter(
+    (x) => x.title != undefined && x.title.includes(keyword)
   );
 
   //?------------------------------------------
   return (
     <div className="App">
       <header>
-        <h2>오늘의 음악 검색하기</h2>
+        <h2>오늘의 영화 검색하기</h2>
       </header>
       <form>
         <button>검색하기</button>
@@ -58,8 +65,8 @@ function App() {
             : test2.map((x, i) => {
                 return (
                   <div className="auto-box">
-                    <span className="auto-value">{x.day}</span>
-                    <span className="auto-value">{x.sleep_time}</span>
+                    <span className="auto-value">{x.title}</span>
+                    <span className="auto-value">{x.genre}</span>
                   </div>
                 );
               })}
